@@ -1,63 +1,47 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { supabase } from "./supabaseClient";
 
 const WHATSAPP_NUMBER = ""; // Ajoute ton numéro plus tard, format 2126XXXXXXXX
 
-const products = [
-  {
-    id: 1,
-    nameFr: "Perceuse électrique",
-    nameAr: "مثقاب كهربائي",
-    category: "perceuses",
-    price: 350,
-    stock: 5,
-    emoji: "🔩",
-  },
-  {
-    id: 2,
-    nameFr: "Meuleuse électrique",
-    nameAr: "آلة الجلخ الكهربائية",
-    category: "meuleuses",
-    price: 280,
-    stock: 3,
-    emoji: "⚙️",
-  },
-  {
-    id: 3,
-    nameFr: "Kit d'outils à main",
-    nameAr: "طقم الأدوات اليدوية",
-    category: "outils",
-    price: 199,
-    stock: 10,
-    emoji: "🛠️",
-  },
-  {
-    id: 4,
-    nameFr: "Marteau professionnel",
-    nameAr: "مطرقة احترافية",
-    category: "outils",
-    price: 85,
-    stock: 8,
-    emoji: "🔨",
-  },
-  {
-    id: 5,
-    nameFr: "Tournevis électrique",
-    nameAr: "مفك كهربائي",
-    category: "perceuses",
-    price: 240,
-    stock: 4,
-    emoji: "🔧",
-  },
-  {
-    id: 6,
-    nameFr: "Équipement de protection",
-    nameAr: "معدات الحماية",
-    category: "securite",
-    price: 120,
-    stock: 12,
-    emoji: "🦺",
-  },
-];
+const [products, setProducts] = useState([]);
+const [loadingProducts, setLoadingProducts] = useState(true);
+const [productsError, setProductsError] = useState("");
+
+useEffect(() => {
+  const loadProducts = async () => {
+    const { data, error } = await supabase
+      .from("products")
+      .select(
+        "id, name_ar, name_fr, category, price_mad, stock_quantity, image_url, is_demo"
+      )
+      .eq("is_active", true)
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      setProductsError(error.message);
+      setLoadingProducts(false);
+      return;
+    }
+
+    setProducts(
+      (data || []).map((p) => ({
+        id: p.id,
+        nameAr: p.name_ar,
+        nameFr: p.name_fr,
+        category: p.category,
+        price: Number(p.price_mad),
+        stock: p.stock_quantity,
+        imageUrl: p.image_url,
+        isDemo: p.is_demo,
+        emoji: "🛠️",
+      }))
+    );
+
+    setLoadingProducts(false);
+  };
+
+  loadProducts();
+}, []);
 
 const translations = {
   fr: {
