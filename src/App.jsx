@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { supabase } from "./supabaseClient";
 
-const WHATSAPP_NUMBER = ""; // Ajoute ton numéro plus tard, format 2126XXXXXXXX
+const WHATSAPP_NUMBER = ""; // Ajoute ton numéro plus tard, format 212668447286
 
 const [products, setProducts] = useState([]);
 const [loadingProducts, setLoadingProducts] = useState(true);
